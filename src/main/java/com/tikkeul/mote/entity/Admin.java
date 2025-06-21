@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "admins", uniqueConstraints = {
+@Table(name = "admin", uniqueConstraints = {
         @UniqueConstraint(columnNames = "userName"),
         @UniqueConstraint(columnNames = "business_no")
 })
@@ -18,11 +18,12 @@ import java.time.LocalDateTime;
 public class Admin {
 
     @Id
+    @Column(name = "admin_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long adminId;
 
     @Column(nullable = false, unique = true, length = 50)
-    private String userName;  // 로그인 ID
+    private String username;  // 로그인 ID
 
     @Column(nullable = false)
     private String password;  // 암호화된 비밀번호

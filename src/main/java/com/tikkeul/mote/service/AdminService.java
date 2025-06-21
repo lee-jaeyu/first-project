@@ -1,8 +1,11 @@
 package com.tikkeul.mote.service;
 
 import com.tikkeul.mote.dto.AdminSignupRequest;
+import com.tikkeul.mote.dto.ParkingLotUpdateRequest;
 import com.tikkeul.mote.entity.Admin;
+import com.tikkeul.mote.entity.ParkingLot;
 import com.tikkeul.mote.repository.AdminRepository;
+import com.tikkeul.mote.repository.ParkingLotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,11 +16,12 @@ import org.springframework.stereotype.Service;
 public class AdminService {
 
     private final AdminRepository adminRepository;
+    private final ParkingLotRepository parkingLotRepository;
     private final StringRedisTemplate redisTemplate;
     private final PasswordEncoder passwordEncoder;
 
     public void signup(AdminSignupRequest request) {
-        String userName = request.getUserName();
+        String userName = request.getUsername();
         String businessNo = request.getBusinessNo();
         String phoneNumber = request.getPhoneNumber();
         String phoneAuthCode = request.getPhoneAuthCode();
@@ -35,7 +39,7 @@ public class AdminService {
         }
 
         //  3. ID 중복 체크
-        if (adminRepository.existsByUserName(userName)) {
+        if (adminRepository.existsByUsername(userName)) {
             throw new IllegalArgumentException("이미 사용 중인 ID입니다.");
         }
 
@@ -52,9 +56,9 @@ public class AdminService {
         //  6. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-        //  7. Admin 저장
+        //  7. Admin, ParkingLot 저장
         Admin admin = Admin.builder()
-                .userName(userName)
+                .username(userName)
                 .password(encodedPassword)
                 .businessNo(businessNo)
                 .name(request.getName())
@@ -63,8 +67,31 @@ public class AdminService {
 
         adminRepository.save(admin);
 
+        ParkingLot lot = ParkingLot.builder()
+                .admin(admin)
+                .pricePerMinute(request.getPricePerMinute())
+                .totalLot(request.getTotalLot())
+                .build();
+
+        parkingLotRepository.save(lot);
+
         //  7. Redis 키 삭제 (선택)
         redisTemplate.delete("business_verified:" + businessNo);
         redisTemplate.delete("verify:" + phoneNumber);
     }
+
+    public void updateParkingLot(Admin admin, ParkingLotUpdateRequest request) {
+        ParkingLot parkingLot = parkingLotRepository.findByAdmin(admin)
+                .orElseThrow(() -> new IllegalStateException("주차장 정보를 찾을 수 없습니다."));
+
+        if (request.getPricePerMinute() != null) {
+            parkingLot.setPricePerMinute(request.getPricePerMinute());
+        }
+        if (request.getTotalLot() != null) {
+            parkingLot.setTotalLot(request.getTotalLot());
+        }
+
+        parkingLotRepository.save(parkingLot);
+    }
 }
+

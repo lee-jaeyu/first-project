@@ -25,7 +25,7 @@ public class AdminDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return admin.getUserName();
+        return admin.getUsername();
     }
 
     @Override
@@ -52,3 +52,4 @@ public class AdminDetails implements UserDetails {
         return admin;
     }
 }
+

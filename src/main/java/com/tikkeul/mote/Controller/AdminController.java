@@ -1,13 +1,16 @@
-package com.tikkeul.mote.Controller;
+package com.tikkeul.mote.controller;
 
+import com.tikkeul.mote.security.AdminDetails;
 import lombok.RequiredArgsConstructor;
 import com.tikkeul.mote.dto.AdminLoginRequest;
 import com.tikkeul.mote.dto.AdminSignupRequest;
 import com.tikkeul.mote.dto.BusinessVerificationRequest;
+import com.tikkeul.mote.dto.ParkingLotUpdateRequest;
 import com.tikkeul.mote.service.AdminService;
 import com.tikkeul.mote.service.BusinessVerificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,13 +32,14 @@ public class AdminController {
     public ResponseEntity<?> login(@RequestBody AdminLoginRequest request, HttpServletRequest httpRequest) {
         try {
             UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword());
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
 
             Authentication authentication = authenticationManager.authenticate(authToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // 세션 생성 (필요 시)
-            httpRequest.getSession(true);
+            // 세션에 SecurityContext 저장
+            httpRequest.getSession(true)
+                    .setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
             return ResponseEntity.ok("로그인 성공");
         } catch (AuthenticationException e) {
@@ -61,6 +65,19 @@ public class AdminController {
             return ResponseEntity.ok("사업자 인증에 성공했습니다.");
         } else {
             return ResponseEntity.badRequest().body("유효하지 않은 사업자등록번호입니다.");
+        }
+    }
+
+    @PatchMapping("/update-parking-lot")
+    public ResponseEntity<?> updateParkingLot(
+            @AuthenticationPrincipal AdminDetails adminDetails,
+            @RequestBody ParkingLotUpdateRequest request
+    ) {
+        try {
+            adminService.updateParkingLot(adminDetails.getAdmin(), request);
+            return ResponseEntity.ok("주차장 정보가 수정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("수정 실패: " + e.getMessage());
         }
     }
 }
