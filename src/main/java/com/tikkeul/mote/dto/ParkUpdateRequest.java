@@ -1,4 +1,4 @@
-﻿package com.tikkeul.mote.dto;
+package com.tikkeul.mote.dto;
 
 import lombok.Getter;
 import lombok.Setter;

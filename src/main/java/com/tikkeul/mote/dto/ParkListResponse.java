@@ -1,4 +1,4 @@
-﻿package com.tikkeul.mote.dto;
+package com.tikkeul.mote.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

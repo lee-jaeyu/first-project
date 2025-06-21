@@ -21,7 +21,7 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
 
     public void signup(AdminSignupRequest request) {
-        String userName = request.getUsername();
+        String userName = request.getUserName();
         String businessNo = request.getBusinessNo();
         String phoneNumber = request.getPhoneNumber();
         String phoneAuthCode = request.getPhoneAuthCode();
@@ -39,7 +39,7 @@ public class AdminService {
         }
 
         //  3. ID 중복 체크
-        if (adminRepository.existsByUsername(userName)) {
+        if (adminRepository.existsByUserName(userName)) {
             throw new IllegalArgumentException("이미 사용 중인 ID입니다.");
         }
 

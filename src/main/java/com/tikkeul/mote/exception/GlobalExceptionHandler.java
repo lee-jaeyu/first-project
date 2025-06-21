@@ -1,4 +1,4 @@
-﻿package com.tikkeul.mote.exception;
+package com.tikkeul.mote.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

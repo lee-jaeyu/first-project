@@ -1,4 +1,4 @@
-﻿package com.tikkeul.mote.controller;
+package com.tikkeul.mote.controller;
 
 import com.tikkeul.mote.dto.ParkListResponse;
 import com.tikkeul.mote.dto.ParkResponse;
@@ -28,6 +28,7 @@ public class ParkController {
         ParkListResponse response = parkService.getParkListWithStatus(admin);
         return ResponseEntity.ok(response);
     }
+
 
     @DeleteMapping("/{parkId}")
     public ResponseEntity<?> deletePark(@PathVariable("parkId") Long parkId,

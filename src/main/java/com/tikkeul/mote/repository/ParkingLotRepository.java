@@ -1,4 +1,4 @@
-﻿package com.tikkeul.mote.repository;
+package com.tikkeul.mote.repository;
 
 import com.tikkeul.mote.entity.Admin;
 import com.tikkeul.mote.entity.ParkingLot;

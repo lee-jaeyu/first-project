@@ -1,4 +1,4 @@
-package com.tikkeul.mote.controller;
+package com.tikkeul.mote.Controller;
 
 import com.tikkeul.mote.security.AdminDetails;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class AdminController {
     public ResponseEntity<?> login(@RequestBody AdminLoginRequest request, HttpServletRequest httpRequest) {
         try {
             UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+                    new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword());
 
             Authentication authentication = authenticationManager.authenticate(authToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);

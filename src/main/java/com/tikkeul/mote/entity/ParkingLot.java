@@ -1,4 +1,4 @@
-﻿package com.tikkeul.mote.entity;
+package com.tikkeul.mote.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

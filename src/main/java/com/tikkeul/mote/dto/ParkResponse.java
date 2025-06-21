@@ -1,4 +1,4 @@
-﻿package com.tikkeul.mote.dto;
+package com.tikkeul.mote.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tikkeul.mote.entity.Park;

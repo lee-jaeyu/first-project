@@ -1,4 +1,4 @@
-﻿package com.tikkeul.mote.service;
+package com.tikkeul.mote.service;
 
 import com.tikkeul.mote.dto.ParkListResponse;
 import com.tikkeul.mote.dto.ParkResponse;
