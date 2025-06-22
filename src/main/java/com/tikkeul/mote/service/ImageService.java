@@ -1,6 +1,5 @@
 package com.tikkeul.mote.service;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.RationalNumber;
@@ -19,12 +18,9 @@ import java.nio.file.Files;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class ImageService {
 
-    private final WebClient webClient;
-
-    public Map<String, Object> extractGpsInfo(File imageFile) throws IOException, ImageReadException {
+    public Map<String, Object> getGPSFromImage(File imageFile) throws IOException, ImageReadException {
         var metadata = Imaging.getMetadata(imageFile);
         if (metadata instanceof JpegImageMetadata jpegMetadata) {
             TiffField latRef = jpegMetadata.findEXIFValueWithExactMatch(GpsTagConstants.GPS_TAG_GPS_LATITUDE_REF);
@@ -38,7 +34,7 @@ public class ImageService {
                 return Map.of("latitude", latitude, "longitude", longitude);
             }
         }
-        throw new IllegalStateException("GPS 정보를 찾을 수 없습니다.");
+        return Map.of("message", "No GPS info");
     }
 
     private double convertToDegrees(Object value, String ref) {
@@ -50,10 +46,12 @@ public class ImageService {
         return ("S".equalsIgnoreCase(ref) || "W".equalsIgnoreCase(ref)) ? -result : result;
     }
 
-    public String sendToOcrServer(File imageFile) throws IOException {
+    public String sendImageToPython(File imageFile) throws IOException {
+        WebClient client = WebClient.create("http://localhost:5000");
+
         byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
 
-        return webClient.post()
+        return client.post()
                 .uri("/ocr")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData("file", new ByteArrayResource(imageBytes) {

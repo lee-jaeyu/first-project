@@ -1,4 +1,4 @@
-package com.tikkeul.mote.controller;
+package com.tikkeul.mote.Controller;
 
 import com.tikkeul.mote.dto.PhoneSendRequest;
 import com.tikkeul.mote.dto.PhoneVerifyRequest;
@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/phone")
 @RequiredArgsConstructor
 public class PhoneVerificationController {

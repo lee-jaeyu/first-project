@@ -58,4 +58,3 @@ public class BusinessVerificationService {
         return false;
     }
 }
-

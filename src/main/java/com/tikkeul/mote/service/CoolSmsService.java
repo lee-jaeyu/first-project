@@ -29,6 +29,10 @@ public class CoolSmsService {
 
     @PostConstruct
     public void init() {
+        System.out.println("[CoolSmsService] 초기화 시작");
+        System.out.println("API Key: " + apiKey);
+        System.out.println("API Secret: " + apiSecret);
+        System.out.println("Sender: " + sender);
         this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, "https://api.coolsms.co.kr");
     }
 
@@ -48,4 +52,3 @@ public class CoolSmsService {
         }
     }
 }
-
