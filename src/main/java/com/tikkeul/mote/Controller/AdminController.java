@@ -1,0 +1,66 @@
+package com.tikkeul.mote.Controller;
+
+import lombok.RequiredArgsConstructor;
+import com.tikkeul.mote.dto.AdminLoginRequest;
+import com.tikkeul.mote.dto.AdminSignupRequest;
+import com.tikkeul.mote.dto.BusinessVerificationRequest;
+import com.tikkeul.mote.service.AdminService;
+import com.tikkeul.mote.service.BusinessVerificationService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.AuthenticationException;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/admin")
+@RequiredArgsConstructor
+public class AdminController {
+
+    private final AdminService adminService;
+    private final BusinessVerificationService businessVerificationService;
+    private final AuthenticationManager authenticationManager;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody AdminLoginRequest request, HttpServletRequest httpRequest) {
+        try {
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword());
+
+            Authentication authentication = authenticationManager.authenticate(authToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // 세션 생성 (필요 시)
+            httpRequest.getSession(true);
+
+            return ResponseEntity.ok("로그인 성공");
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(401).body("로그인 실패: 아이디 또는 비밀번호 오류");
+        }
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody AdminSignupRequest request) {
+        try {
+            adminService.signup(request);
+            return ResponseEntity.ok("회원가입이 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify-business")
+    public ResponseEntity<?> verifyBusiness(@RequestBody BusinessVerificationRequest request) {
+        boolean verified = businessVerificationService.verifyAndStore(request.getBusinessNo());
+
+        if (verified) {
+            return ResponseEntity.ok("사업자 인증에 성공했습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("유효하지 않은 사업자등록번호입니다.");
+        }
+    }
+}
